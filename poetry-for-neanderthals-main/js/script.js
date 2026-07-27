@@ -126,6 +126,17 @@ function startGame() {
     // Start the countdown
     startCountdown();
 }
+function startNextTurn() {
+    score = 0;
+    timer = max_timer;
+    updateWords();
+
+    document.getElementById('score').textContent =  `Score: ${score}`;
+    document.getElementById('timer-display').textContent =  `Time: ${timer}s`;
+
+    game_running = true;
+    startCountdown();
+}
 
 function resetGame() {
     updateWords();
@@ -162,7 +173,12 @@ if (timer <= 0) {
 
     updateTeamDisplay();
 
-    alert("Time's up! Pass the computer to the next team.");
+    if (currentTeam === "rock") {
+        alert("Time's up! Pass the device to Team Rock, then press OK to start.");
+        startNextTurn();
+    } else {
+        alert("Game Over!\n\nTeam Stick: " + teamStickScore + "\nTeam Rock: " + teamRockScore);
+    }
 }
     }, 1000); // Update every second
 }
