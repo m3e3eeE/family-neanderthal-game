@@ -10,6 +10,19 @@ let max_timer;
 let timer;
 let game_running = false;
 let countdown_interval;
+let teamStickScore = 0;
+let teamRockScore = 0;
+let currentTeam = "stick";
+
+function updateTeamDisplay() {
+    document.getElementById("team-stick-score").textContent = teamStickScore;
+    document.getElementById("team-rock-score").textContent = teamRockScore;
+
+    document.getElementById("current-team-name").textContent =
+        currentTeam === "stick"
+            ? "🪵 Team Stick"
+            : "🪨 Team Rock";
+}
 
 document.getElementById('score-1').addEventListener('click', function() {
     if(game_running) {
@@ -100,6 +113,9 @@ function startGame() {
     game_running = true;
     timer = max_timer;
     score = 0;
+
+    updateTeamDisplay();
+
     document.getElementById('score').textContent = `Score: ${score}`;
     
     const options_menu = document.getElementById('options-menu');
@@ -132,17 +148,38 @@ function startCountdown() {
         timer--;
         document.getElementById('timer-display').textContent = `Time: ${timer}s`;
 
-        if (timer <= 0) {
-            clearInterval(countdown_interval); // Stop the countdown
-            game_running = false;
-        }
+if (timer <= 0) {
+    clearInterval(countdown_interval);
+    game_running = false;
+
+    if (currentTeam === "stick") {
+        teamStickScore += score;
+        currentTeam = "rock";
+    } else {
+        teamRockScore += score;
+        currentTeam = "stick";
+    }
+
+    updateTeamDisplay();
+
+    alert("Time's up! Pass the computer to the next team.");
+}
     }, 1000); // Update every second
 }
 
 function updateWords() {
-  document.getElementById('word1').textContent = words[current_word % words.length]["1"];
-  document.getElementById('word3').textContent = words[current_word % words.length]["3"];
-  current_word++;
+    // Once every card has been used, shuffle the full deck again.
+    if (current_word >= words.length) {
+        shuffle(words);
+        current_word = 0;
+    }
+
+    const card = words[current_word];
+
+    document.getElementById('word1').textContent = card["1"];
+    document.getElementById('word3').textContent = card["3"];
+
+    current_word++;
 }
 
 function shuffle(array) {

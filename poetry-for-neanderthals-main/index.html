@@ -7,7 +7,40 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <!-- Team Scoreboard -->
 
+<div class="w-96 mb-4 grid grid-cols-2 gap-4">
+
+    <div class="bg-amber-100 border-2 border-amber-500 rounded-xl p-4 text-center shadow">
+
+        <div class="text-sm font-bold uppercase">Team Stick</div>
+
+        <div id="team-stick-score" class="text-4xl font-black">0</div>
+
+    </div>
+
+    <div class="bg-stone-200 border-2 border-stone-600 rounded-xl p-4 text-center shadow">
+
+        <div class="text-sm font-bold uppercase">Team Rock</div>
+
+        <div id="team-rock-score" class="text-4xl font-black">0</div>
+
+    </div>
+
+</div>
+<!-- Current Team -->
+<div
+  id="current-team-panel"
+  class="w-96 mb-4 rounded-xl border-2 border-blue-500 bg-blue-50 p-4 text-center shadow"
+>
+  <div class="text-sm font-bold uppercase text-blue-700">
+    Current turn
+  </div>
+
+  <div id="current-team-name" class="text-2xl font-black">
+    🪵 Team Stick
+  </div>
+</div>
     <!-- Options Menu -->
     <div id="options-menu" class="border border-gray-200 rounded-lg shadow-lg w-96 bg-white">
         <div class="p-4">
