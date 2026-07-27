@@ -59,6 +59,19 @@ document.getElementById('start-game').addEventListener('click', async function()
         startGame();
     }
 });
+document
+    .getElementById('start-next-turn')
+    .addEventListener('click', function() {
+        document
+            .getElementById('between-turn-screen')
+            .classList.add('hidden');
+
+        document
+            .getElementById('game-screen')
+            .classList.remove('hidden');
+
+        startNextTurn();
+    });
 
 async function loadAndValidateConfig() {
     let valid = true;
@@ -113,6 +126,11 @@ function startGame() {
     updateWords();
     
     game_running = true;
+    max_timer = parseInt(
+        document.getElementById('time-input').value,
+        10
+    );
+    
     timer = max_timer;
     score = 0;
 
@@ -134,6 +152,26 @@ function startGame() {
     
     // Start the countdown
     startCountdown();
+}
+function showBetweenTurnScreen() {
+    document
+        .getElementById('game-screen')
+        .classList.add('hidden');
+
+    document
+        .getElementById('between-turn-screen')
+        .classList.remove('hidden');
+
+    const nextTeamName =
+        currentTeam === 'stick'
+            ? '🪵 Team Stick'
+            : '🪨 Team Rock';
+
+    document.getElementById('next-team-name').textContent =
+        nextTeamName;
+
+    document.getElementById('next-turn-number').textContent =
+        `Turn ${currentRound} of ${totalRounds}`;
 }
 function startNextTurn() {
     score = 0;
@@ -158,24 +196,26 @@ function resetGame() {
 }
 
 function startCountdown() {
-    // Stop any countdown that might still be running.
-    clearInterval(counstdown_interval);
+    clearInterval(countdown_interval);
 
-    // Show the starting time.
+    const endTime = Date.now() + timer * 1000;
+
     document.getElementById('timer-display').textContent =
-        `Time: ${timer}s`;
+        `Timer: ${timer}`;
 
     countdown_interval = setInterval(() => {
-        timer--;
+        timer = Math.max(
+            0,
+            Math.ceil((endTime - Date.now()) / 1000)
+        );
 
         document.getElementById('timer-display').textContent =
-            `Time: ${timer}s`;
+            `Timer: ${timer}`;
 
         if (timer <= 0) {
             clearInterval(countdown_interval);
             game_running = false;
 
-            // Add this turn's points and switch to the other team.
             if (currentTeam === "stick") {
                 teamStickScore += score;
                 currentTeam = "rock";
@@ -186,25 +226,13 @@ function startCountdown() {
 
             updateTeamDisplay();
 
-            // currentTeam is now the team that plays next.
             if (currentTeam === "rock") {
-                alert(
-                    "Time's up!\n\n" +
-                    "Pass the device to Team Rock.\n" +
-                    "Turn " + currentRound + " of " + totalRounds
-                );
 
-                startNextTurn();
+                showBetweenTurnScreen();
             } else if (currentRound < totalRounds) {
                 currentRound++;
 
-                alert(
-                    "Turn " + (currentRound - 1) + " complete!\n\n" +
-                    "Pass the device to Team Stick.\n" +
-                    "Turn " + currentRound + " of " + totalRounds
-                );
-
-                startNextTurn();
+                showBetweenTurnScreen();
             } else {
                 let winnerMessage;
 
@@ -224,7 +252,7 @@ function startCountdown() {
                 );
             }
         }
-    }, 1000);
+    }, 250);
 }
 
 function updateWords() {
