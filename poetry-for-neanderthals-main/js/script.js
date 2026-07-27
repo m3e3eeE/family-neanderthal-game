@@ -13,6 +13,8 @@ let countdown_interval;
 let teamStickScore = 0;
 let teamRockScore = 0;
 let currentTeam = "stick";
+let currentRound = 1;
+let totalRounds = 3;
 
 function updateTeamDisplay() {
     document.getElementById("team-stick-score").textContent = teamStickScore;
@@ -114,6 +116,13 @@ function startGame() {
     timer = max_timer;
     score = 0;
 
+    totalRounds = parseInt(
+        document.getElementById('rounds-input').value,
+        10
+    );
+    
+    currentRound = 1;
+
     updateTeamDisplay();
 
     document.getElementById('score').textContent = `Score: ${score}`;
@@ -149,38 +158,73 @@ function resetGame() {
 }
 
 function startCountdown() {
-    // Stop any existing countdowns
-    clearInterval(countdown_interval);
+    // Stop any countdown that might still be running.
+    clearInterval(counstdown_interval);
 
-    // Display the initial time
-    document.getElementById('timer-display').textContent = `Time: ${timer}s`;
+    // Show the starting time.
+    document.getElementById('timer-display').textContent =
+        `Time: ${timer}s`;
 
     countdown_interval = setInterval(() => {
         timer--;
-        document.getElementById('timer-display').textContent = `Time: ${timer}s`;
 
-if (timer <= 0) {
-    clearInterval(countdown_interval);
-    game_running = false;
+        document.getElementById('timer-display').textContent =
+            `Time: ${timer}s`;
 
-    if (currentTeam === "stick") {
-        teamStickScore += score;
-        currentTeam = "rock";
-    } else {
-        teamRockScore += score;
-        currentTeam = "stick";
-    }
+        if (timer <= 0) {
+            clearInterval(countdown_interval);
+            game_running = false;
 
-    updateTeamDisplay();
+            // Add this turn's points and switch to the other team.
+            if (currentTeam === "stick") {
+                teamStickScore += score;
+                currentTeam = "rock";
+            } else {
+                teamRockScore += score;
+                currentTeam = "stick";
+            }
 
-    if (currentTeam === "rock") {
-        alert("Time's up! Pass the device to Team Rock, then press OK to start.");
-        startNextTurn();
-    } else {
-        alert("Game Over!\n\nTeam Stick: " + teamStickScore + "\nTeam Rock: " + teamRockScore);
-    }
-}
-    }, 1000); // Update every second
+            updateTeamDisplay();
+
+            // currentTeam is now the team that plays next.
+            if (currentTeam === "rock") {
+                alert(
+                    "Time's up!\n\n" +
+                    "Pass the device to Team Rock.\n" +
+                    "Turn " + currentRound + " of " + totalRounds
+                );
+
+                startNextTurn();
+            } else if (currentRound < totalRounds) {
+                currentRound++;
+
+                alert(
+                    "Turn " + (currentRound - 1) + " complete!\n\n" +
+                    "Pass the device to Team Stick.\n" +
+                    "Turn " + currentRound + " of " + totalRounds
+                );
+
+                startNextTurn();
+            } else {
+                let winnerMessage;
+
+                if (teamStickScore > teamRockScore) {
+                    winnerMessage = "🪵 Team Stick wins!";
+                } else if (teamRockScore > teamStickScore) {
+                    winnerMessage = "🪨 Team Rock wins!";
+                } else {
+                    winnerMessage = "It's a tie!";
+                }
+
+                alert(
+                    "Game Over!\n\n" +
+                    "Team Stick: " + teamStickScore + "\n" +
+                    "Team Rock: " + teamRockScore + "\n\n" +
+                    winnerMessage
+                );
+            }
+        }
+    }, 1000);
 }
 
 function updateWords() {
